@@ -1,5 +1,4 @@
 import 'dart:ui';
-import 'package:jet_game_engine/engine/camera.dart';
 import 'package:opengl_es_bindings/opengl_es_bindings.dart';
 import 'engine.dart';
 
@@ -15,6 +14,26 @@ sealed class Background {
 
   factory Background.image({required String image}) =>
       ImageBackground(image: image, gl: Engine.instance.gl);
+
+  factory Background.parallax(
+          {required String imageFar,
+          required String imageNear,
+          required String imageMid,
+          required double farSpeed,
+          required double nearSpeed,
+          required double midSpeed,
+          required double midAlpha,
+          required double nearAlpha}) =>
+      ParallaxBackground(
+          gl: Engine.instance.gl,
+          imageFar: imageFar,
+          imageNear: imageNear,
+          imageMid: imageMid,
+          farSpeed: farSpeed,
+          nearSpeed: nearSpeed,
+          midSpeed: midSpeed,
+          midAlpha: midAlpha,
+          nearAlpha: nearAlpha);
 }
 
 class ClearBackground extends Background {
@@ -65,5 +84,162 @@ class ImageBackground extends Background {
     final camera = Engine.instance.camera!;
     sprites.updatePosition(spr, camera.pos.x.toInt() + camera.viewLen ~/ 2,
         camera.pos.y.toInt() + camera.viewHgt ~/ 2, 100);
+  }
+}
+
+class ParallaxBackground extends Background {
+  final LibOpenGLES gl;
+  final String imageFar;
+  final String imageMid;
+  final String imageNear;
+  final double farSpeed;
+  final double midSpeed;
+  final double nearSpeed;
+  final double midAlpha;
+  final double nearAlpha;
+  late final int farSpr;
+  late final int midSpr;
+  late final int nearSpr;
+  late final int farSpr2;
+  late final int midSpr2;
+  late final int nearSpr2;
+  double farX = 0;
+  double midX = 0;
+  double nearX = 0;
+  double farX2 = 0;
+  double midX2 = 0;
+  double nearX2 = 0;
+
+  ParallaxBackground({
+    required this.gl,
+    required this.imageFar,
+    required this.imageMid,
+    required this.imageNear,
+    required this.farSpeed,
+    required this.midSpeed,
+    required this.nearSpeed,
+    required this.midAlpha,
+    required this.nearAlpha,
+  }) {
+    final sprites = Engine.instance.sprites!;
+    final len = Engine.engineLen!;
+    final hgt = Engine.engineHgt!;
+    const x = 0;
+    farX = x.toDouble();
+    midX = x.toDouble();
+    nearX = x.toDouble();
+    final y = hgt ~/ 2;
+    farX2 = farSpeed > 0 ? len * 1.0 : -len * 1.0;
+    midX2 = midSpeed > 0 ? len * 1.0 : -len * 1.0;
+    nearX2 = nearSpeed > 0 ? len * 1.0 : -len * 1.0;
+    farSpr =
+        sprites.add(x: x, y: y, z: 100, len: len, hgt: hgt, atom: imageFar);
+    midSpr = sprites.add(
+        x: x,
+        y: y,
+        z: 99,
+        len: len,
+        hgt: hgt,
+        atom: imageMid,
+        color: Color.fromRGBO(255, 255, 255, midAlpha));
+    nearSpr = sprites.add(
+        x: x,
+        y: y,
+        z: 98,
+        len: len,
+        hgt: hgt,
+        atom: imageNear,
+        color: Color.fromRGBO(255, 255, 255, nearAlpha));
+    farSpr2 = sprites.add(
+        x: farX2.toInt(), y: y, z: 100, len: len, hgt: hgt, atom: imageFar);
+    midSpr2 = sprites.add(
+        x: midX2.toInt(),
+        y: y,
+        z: 99,
+        len: len,
+        hgt: hgt,
+        atom: imageMid,
+        color: Color.fromRGBO(255, 255, 255, midAlpha));
+    nearSpr2 = sprites.add(
+        x: nearX2.toInt(),
+        y: y,
+        z: 98,
+        len: len,
+        hgt: hgt,
+        atom: imageNear,
+        color: Color.fromRGBO(255, 255, 255, nearAlpha));
+  }
+
+  @override
+  void render() {
+    gl
+      ..glClearDepthf(1)
+      ..glClear(GL_DEPTH_BUFFER_BIT);
+  }
+
+  @override
+  void update(double delta) {
+    final sprites = Engine.instance.sprites!;
+    final camera = Engine.instance.camera!;
+    final cx = camera.pos.x.toInt() + camera.viewLen ~/ 2;
+    final cy = camera.pos.y.toInt() + camera.viewHgt ~/ 2;
+    farX += delta * farSpeed;
+    midX += delta * midSpeed;
+    nearX += delta * nearSpeed;
+    farX2 += delta * farSpeed;
+    midX2 += delta * midSpeed;
+    nearX2 += delta * nearSpeed;
+    if (farSpeed > 0) {
+      if (farX > camera.viewLen) {
+        farX -= camera.viewLen * 2;
+      }
+      if (farX2 > camera.viewLen) {
+        farX2 -= camera.viewLen * 2;
+      }
+    } else {
+      if (farX < -camera.viewLen) {
+        farX += camera.viewLen * 2;
+      }
+      if (farX2 < -camera.viewLen) {
+        farX2 += camera.viewLen * 2;
+      }
+    }
+    if (midSpeed > 0) {
+      if (midX > camera.viewLen) {
+        midX -= camera.viewLen * 2;
+      }
+      if (midX2 > camera.viewLen) {
+        midX2 -= camera.viewLen * 2;
+      }
+    } else {
+      if (midX < -camera.viewLen) {
+        midX += camera.viewLen * 2;
+      }
+      if (midX2 < -camera.viewLen) {
+        midX2 += camera.viewLen * 2;
+      }
+    }
+    if (nearSpeed > 0) {
+      if (nearX > camera.viewLen) {
+        nearX -= camera.viewLen * 2;
+      }
+      if (nearX2 > camera.viewLen) {
+        nearX2 -= camera.viewLen * 2;
+      }
+    } else {
+      if (nearX < -camera.viewLen) {
+        nearX += camera.viewLen * 2;
+      }
+      if (nearX2 < -camera.viewLen) {
+        nearX2 += camera.viewLen * 2;
+      }
+    }
+    sprites
+      ..updatePosition(farSpr, farX.toInt() + cx, cy, 100)
+      ..updatePosition(midSpr, midX.toInt() + cx, cy, 99)
+      ..updatePosition(nearSpr, nearX.toInt() + cx, cy, 98)
+      ..updatePosition(farSpr2, farX2.toInt() + cx, cy, 100)
+      ..updatePosition(midSpr2, midX2.toInt() + cx, cy, 99)
+      ..updatePosition(nearSpr2, nearX2.toInt() + cx, cy, 98);
   }
 }

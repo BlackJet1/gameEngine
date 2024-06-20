@@ -12,6 +12,9 @@ class Sprites {
   final GraphicAtoms atoms;
   List<SpriteModel> sprites = List<SpriteModel>.empty(growable: true);
 
+  SpriteModel? getById(int id) =>
+      sprites.where((element) => element.id == id).firstOrNull;
+
   final Map<String, CoreRender> _renderer = {}; // разделяем по текстурам
   //late final CoreRender _renderer;
 
@@ -63,7 +66,6 @@ class Sprites {
       ..removeWhere((element) => element.id == id)
       ..add(newSprite);
     r.updatePosition(id, ox, oy, z);
-
   }
 
   void updatePosition(int id, int x, int y, int z) {
@@ -138,6 +140,9 @@ class Sprites {
   }
 
   void updateAngle(int id, double angle) {
+    if (id == -1) {
+      return;
+    }
     final sprite = sprites.where((element) => element.id == id);
     if (sprite.isEmpty) {
       return;

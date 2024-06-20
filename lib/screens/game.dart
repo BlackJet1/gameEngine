@@ -68,16 +68,16 @@ class JGameState extends State<JGame> with WidgetsBindingObserver {
     await engine.shader?.loadProgram(1, '2d.vsh', '2d.fsh');
     await texture.loadTexture('atlas.png');
     await texture.loadTexture('bgr.png');
-    for (var i = 0; i < 2000; i++) {
-      sprites.add(
-          x: i * 8,
-          y: i * 8,
-          z: 16,
-          len: 16 + i,
-          hgt: 16 + i,
-          atom: i.isEven ? 'bgr' : 'test1');
-    }
-    engine.background = Background.image(image: 'bgr');
+
+    engine.background = Background.parallax(
+        imageFar: 'bgr',
+        imageNear: 'test',
+        imageMid: 'test1',
+        farSpeed: -100,
+        nearSpeed: -300,
+        midSpeed: -200,
+        midAlpha: 0.75,
+        nearAlpha: 0.5);
     spr1 = sprites.add(
         x: 360,
         y: 640,
@@ -107,6 +107,7 @@ class JGameState extends State<JGame> with WidgetsBindingObserver {
         hgt: 500,
         color: Colors.amber,
         atom: 'test');
+
   }
 
   @override

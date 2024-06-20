@@ -77,6 +77,7 @@ class JGameState extends State<JGame> with WidgetsBindingObserver {
           hgt: 16 + i,
           atom: i.isEven ? 'bgr' : 'test1');
     }
+    engine.background = Background.image(image: 'bgr');
     spr1 = sprites.add(
         x: 360,
         y: 640,

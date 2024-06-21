@@ -1,9 +1,7 @@
-import 'atoms.dart';
+sealed class Particle {
+  const Particle();
+}
 
-class Particles {
-  Particles({required this.atoms});
-
-  final GraphicAtoms atoms;
-  final List<int> generators=[];
-  final Map<String, int> particles = {};
+class ColorParticle extends Particle {
+  const ColorParticle();
 }

@@ -15,25 +15,23 @@ sealed class Background {
   factory Background.image({required String image}) =>
       ImageBackground(image: image, gl: Engine.instance.gl);
 
-  factory Background.parallax(
-          {required String imageFar,
-          required String imageNear,
-          required String imageMid,
-          required double farSpeed,
-          required double nearSpeed,
-          required double midSpeed,
-          required double midAlpha,
-          required double nearAlpha}) =>
+  factory Background.parallax({
+    required String imageFar,
+    required String imageNear,
+    required String imageMid,
+    required double farSpeed,
+    required double nearSpeed,
+    required double midSpeed,
+  }) =>
       ParallaxBackground(
-          gl: Engine.instance.gl,
-          imageFar: imageFar,
-          imageNear: imageNear,
-          imageMid: imageMid,
-          farSpeed: farSpeed,
-          nearSpeed: nearSpeed,
-          midSpeed: midSpeed,
-          midAlpha: midAlpha,
-          nearAlpha: nearAlpha);
+        gl: Engine.instance.gl,
+        imageFar: imageFar,
+        imageNear: imageNear,
+        imageMid: imageMid,
+        farSpeed: farSpeed,
+        nearSpeed: nearSpeed,
+        midSpeed: midSpeed,
+      );
 }
 
 class ClearBackground extends Background {
@@ -95,8 +93,6 @@ class ParallaxBackground extends Background {
   final double farSpeed;
   final double midSpeed;
   final double nearSpeed;
-  final double midAlpha;
-  final double nearAlpha;
   late final int farSpr;
   late final int midSpr;
   late final int nearSpr;
@@ -118,8 +114,6 @@ class ParallaxBackground extends Background {
     required this.farSpeed,
     required this.midSpeed,
     required this.nearSpeed,
-    required this.midAlpha,
-    required this.nearAlpha,
   }) {
     final sprites = Engine.instance.sprites!;
     final len = Engine.engineLen!;
@@ -129,45 +123,45 @@ class ParallaxBackground extends Background {
     midX = x.toDouble();
     nearX = x.toDouble();
     final y = hgt ~/ 2;
-    farX2 = farSpeed > 0 ? len * 1.0 : -len * 1.0;
-    midX2 = midSpeed > 0 ? len * 1.0 : -len * 1.0;
-    nearX2 = nearSpeed > 0 ? len * 1.0 : -len * 1.0;
+    farX2 = farSpeed < 0 ? len * 1.0 : -len * 1.0;
+    midX2 = midSpeed < 0 ? len * 1.0 : -len * 1.0;
+    nearX2 = nearSpeed < 0 ? len * 1.0 : -len * 1.0;
     farSpr =
         sprites.add(x: x, y: y, z: 100, len: len, hgt: hgt, atom: imageFar);
     midSpr = sprites.add(
-        x: x,
-        y: y,
-        z: 99,
-        len: len,
-        hgt: hgt,
-        atom: imageMid,
-        color: Color.fromRGBO(255, 255, 255, midAlpha));
+      x: x,
+      y: y,
+      z: 99,
+      len: len,
+      hgt: hgt,
+      atom: imageMid,
+    );
     nearSpr = sprites.add(
-        x: x,
-        y: y,
-        z: 98,
-        len: len,
-        hgt: hgt,
-        atom: imageNear,
-        color: Color.fromRGBO(255, 255, 255, nearAlpha));
+      x: x,
+      y: y,
+      z: 98,
+      len: len,
+      hgt: hgt,
+      atom: imageNear,
+    );
     farSpr2 = sprites.add(
         x: farX2.toInt(), y: y, z: 100, len: len, hgt: hgt, atom: imageFar);
     midSpr2 = sprites.add(
-        x: midX2.toInt(),
-        y: y,
-        z: 99,
-        len: len,
-        hgt: hgt,
-        atom: imageMid,
-        color: Color.fromRGBO(255, 255, 255, midAlpha));
+      x: midX2.toInt(),
+      y: y,
+      z: 99,
+      len: len,
+      hgt: hgt,
+      atom: imageMid,
+    );
     nearSpr2 = sprites.add(
-        x: nearX2.toInt(),
-        y: y,
-        z: 98,
-        len: len,
-        hgt: hgt,
-        atom: imageNear,
-        color: Color.fromRGBO(255, 255, 255, nearAlpha));
+      x: nearX2.toInt(),
+      y: y,
+      z: 98,
+      len: len,
+      hgt: hgt,
+      atom: imageNear,
+    );
   }
 
   @override

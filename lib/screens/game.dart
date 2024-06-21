@@ -41,6 +41,16 @@ class JGameState extends State<JGame> with WidgetsBindingObserver {
               tl: 2048,
               th: 2048))
       ..addAtom(
+          'cloud',
+          TextureAtom(
+              ix1: 0,
+              iy1: 0,
+              ix2: 719,
+              iy2: 1279,
+              textureName: 'cloud.png',
+              tl: 720,
+              th: 1280))
+      ..addAtom(
           'test1',
           TextureAtom(
               ix1: 0,
@@ -64,20 +74,21 @@ class JGameState extends State<JGame> with WidgetsBindingObserver {
       ..background = Background.clear(color: Colors.black)
       ..init(update);
     await texture.loadImageAsset('bgr.png');
+    await texture.loadImageAsset('cloud.png');
     await texture.loadImageAsset('atlas.png');
     await engine.shader?.loadProgram(1, '2d.vsh', '2d.fsh');
     await texture.loadTexture('atlas.png');
     await texture.loadTexture('bgr.png');
+    await texture.loadTexture('cloud.png');
 
     engine.background = Background.parallax(
-        imageFar: 'bgr',
-        imageNear: 'test',
-        imageMid: 'test1',
-        farSpeed: -100,
-        nearSpeed: -300,
-        midSpeed: -200,
-        midAlpha: 0.75,
-        nearAlpha: 0.5);
+      imageFar: 'bgr',
+      imageNear: 'cloud',
+      imageMid: 'cloud',
+      farSpeed: -100,
+      nearSpeed: -300,
+      midSpeed: -200,
+    );
     spr1 = sprites.add(
         x: 360,
         y: 640,
@@ -107,7 +118,6 @@ class JGameState extends State<JGame> with WidgetsBindingObserver {
         hgt: 500,
         color: Colors.amber,
         atom: 'test');
-
   }
 
   @override
@@ -153,15 +163,17 @@ class JGameState extends State<JGame> with WidgetsBindingObserver {
     if (cy < -640) {
       cyw = 1;
     }
-    camera.pos.x = cx;
-    camera.pos.y = cy;
+    //camera.pos.x = cx;
+    //camera.pos.y = cy;
     angle += 0.01;
     if (angle > 2 * pi) {
       angle -= 2 * pi;
     }
-    sprites
+    /*sprites
       ..updateAngle(spr3, angle * 10)
       ..updateAngle(spr1, angle)
       ..updateAngle(spr2, angle * 5);
+  }
+     */
   }
 }
